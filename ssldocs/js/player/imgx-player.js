@@ -80,4 +80,6 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 	this.loadSource = function (url) {
 		video.src = url;
 	}
+	
+	this.clear = function () {};
 }

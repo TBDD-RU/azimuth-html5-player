@@ -74,7 +74,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		let jpeg = frames[offset].jpeg;
 		
 		video.src = URL.createObjectURL(
-				new Blob([jpeg], {type: "image/jpeg"})
+			new Blob([jpeg], {type: "image/jpeg"})
 		);
 
 		currentOffset = offset;
@@ -102,6 +102,9 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	function innerPlay(offset) {
 		if (stop) {
 			stop = false;
+		}
+		if (offset + 1 > frames.length) {
+			offset = 0;
 		}
 		playLoop(offset);
 	}
@@ -144,7 +147,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		let start = 0,
 			end = frames.length - 1;
 
-		duration = frames[end].datetime - frames[start].datetime;
+		duration = (frames[end].datetime - frames[start].datetime) / 1000;
 
 		$cache(".duration").innerHTML = duration.toFixed(3);
 		$cache(".scrubber").max = end;
@@ -154,4 +157,10 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 
 		document.body.style.cursor = "default";
 	}
+
+	this.clear = function () {
+		innerStop();
+		currentOffset = 0;
+		frames = [];
+	};
 }

@@ -6,13 +6,15 @@
  * 
  * @author: alkorgun
  */
-function IMGX() {
+function IMGX(arrayBuffer) {
 	this.violations = {};
 	this.streams = {};
 	this.onreadyFunc = null;
 
-	this.initialize = function (data) { // ArrayBuffer
-		untar(data).then((files) => {
+	let self = this;
+
+	function initialize() {
+		untar(arrayBuffer).then((files) => {
 			for (let file of files) {
 				if (file.name.endsWith("info.xml")) {
 					xml = file.blob;
@@ -52,9 +54,9 @@ function IMGX() {
 				}
 				info.src = mp4;
 
-				this.violations[violation.id] = info;
+				self.violations[violation.id] = info;
 
-				this.onreadyFunc(this);
+				self.onreadyFunc(self);
 			}).readAsText(xml);
 		});
 	}
@@ -62,6 +64,8 @@ function IMGX() {
 	this.onready = function (func) {
 		this.onreadyFunc = func;
 	}
+
+	initialize();
 }
 
 function initBlobReader(func) {

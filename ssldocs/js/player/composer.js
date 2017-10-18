@@ -32,7 +32,7 @@ function formPage() {
 				props: ["phases", "progress"]
 			},
 			"metadata": {
-				template: "#metadata",
+				template: "#metadata-template",
 				props: ["meta"]
 			}
 		},
@@ -46,7 +46,7 @@ function formPage() {
 					if (filename.endsWith(".imgx")) {
 						this.player = "app-imgx-player";
 
-						fragment = new IMGX();
+						fragment = new IMGX(data);
 						fragment.onready(function (imgx) {
 							let violation;
 							
@@ -55,9 +55,11 @@ function formPage() {
 								break;
 							}
 							if (violation.filename.endsWith(".mp4")) {
-								if (!composer.IMGXPlayer) {
-									composer.IMGXPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", composer);
+								if (composer.currentReactor) {
+									composer.currentReactor.clear();
 								}
+								composer.IMGXPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", composer);
+								
 								composer.IMGXPlayer.loadSource(violation.src);
 
 								composer.currentReactor = composer.IMGXPlayer;
@@ -65,20 +67,20 @@ function formPage() {
 								alert("Not supported yet.")
 							}
 						});
-						fragment.initialize(data);
 					} else if (filename.endsWith(".imgf")) {
 						this.player = "app-imgf-player";
 
-						fragment = new IMGF();
+						fragment = new IMGF(data);
 						fragment.onready(function (imgf) {
-							if (!composer.IMGFPlayer) {
-								composer.IMGFPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
+							if (composer.currentReactor) {
+								composer.currentReactor.clear();
 							}
+							composer.IMGFPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
+							
 							composer.IMGFPlayer.loadSource(imgf.frames);
 							
 							composer.currentReactor = composer.IMGFPlayer;
 						});
-						fragment.initialize(data);
 					} else if (filename.endsWith(".imgv")) {
 						fragment = new IMGF(data);
 					} else {
