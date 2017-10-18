@@ -1,0 +1,56 @@
+/**
+ * player.css
+ */
+#app-composer {
+	margin: 3% 0 0 5%;
+	display: grid;
+	grid-gap: 20px;
+	grid-template-columns: 65% 15%;
+}
+
+#fragment-player-slot {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+#metadata {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.phasebar {
+	font-size: 0;
+	margin-bottom: 4px;
+}
+
+.controlbar {
+	margin-top: 6px;
+}
+
+.times-bind {
+	display: inline-block;
+	margin-right: 8px;
+}
+
+#metadata ul {
+	list-style-type: none;
+}
+
+.phase-red,
+.phase-green,
+.phase-yellow {
+	display: inline-block;
+	height: 4px;
+}
+
+.phase-red {
+	background-color: red;
+}
+
+.phase-green {
+	background-color: green;
+}
+
+.phase-yellow {
+	background-color: yellow;
+}

@@ -1,0 +1,43 @@
+{% include 'palyer/imgx.html' %}
+{% include 'palyer/imgf.html' %}
+{% include 'palyer/jpeg.html' %}
+
+{% block head %}
+	<link rel="stylesheet" href="/css/player.css">
+	<script src="/js/ext/vue-2.1.8.min.js"></script>
+	<script src="/js/ext/bufferpack.js"></script>
+	<script src="/js/ext/untar.js"></script>
+	<script src="/js/fragments/imgf.js"></script>
+	<script src="/js/fragments/imgx.js"></script>
+	<script src="/js/player/composer.js"></script>
+{% endblock %}
+
+{% block body %}
+	<template id="metadata-template">
+		<div id="metadata">
+			<ul>
+				<li v-for="data in meta">
+					{{ "{name}: {value}".format(data) }}
+				</li>
+			</ul>
+		</div>
+	</template>
+	<div id="app-composer">
+		<div id="fragment-player-slot" v-if="type">
+			<app-imgx-player v-if="source == 'imgx'"
+				:phases="phases"
+				:source="type">
+			</app-imgx-player>
+			<app-imgf-player v-else-if="source in ['.imgf', '.imgv']"
+				:phases="phases"
+				:source="type">
+			</app-imgf-player>
+		</div>
+		<metadata
+			:meta="meta">
+		</metadata>
+	</div>
+	<br>
+	<input id="imgx-input" class="file" value="Choose file" type="file" accept=".imgx" onchange="composer.expandIMGX()">
+	<input id="imgf-input" class="file" value="Choose file" type="file" accept=".imgf,.imgv" onchange="composer.expandIMGF()">
+{% endblock %}

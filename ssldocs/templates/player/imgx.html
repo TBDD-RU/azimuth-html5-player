@@ -1,0 +1,32 @@
+
+{% block head %}
+	<script src="/js/player/imgx-player.js"></script>
+{% endblock %}
+
+{% block body %}
+	<template id="imgx-player-template">
+		<div id="app-imgx-palyer">
+			<video width="100%" onclick="composer.IMGXPlayer.playSwitch()">
+				<!-- <source src="detail.mp4"> -->
+			</video>
+			<div class="phasebar">
+				<span class="phase-green" style="width: 35%;"></span>
+				<span class="phase-yellow" style="width: 15%;"></span>
+				<span class="phase-red" style="width: 50%;"></span>
+			</div>
+			<progress class="scrubber" v-bind:value="progress" style="width: 100%;"></progress>
+			<div class="controlbar">
+				<button onclick="composer.IMGXPlayer.shiftFrame()">&lt;</button>
+				<button onclick="composer.IMGXPlayer.playSwitch()">Play / Stop</button>
+				<button onclick="composer.IMGXPlayer.shiftFrame(true)">&gt;</button>
+				<div style="float: right;">
+					<div class="times-bind">
+						<span class="time">0.00</span><span> / </span> <span class="duration">0.00</span>
+					</div>
+					<input class="file" value="Choose file" type="file" accept=".imgx" onchange="composer.expandIMGX()">
+					<button onclick="composer.sizeSwitch()">Large / Small</button>
+				</div>
+			</div>
+		</div>
+	</template>
+{% endblock %}
