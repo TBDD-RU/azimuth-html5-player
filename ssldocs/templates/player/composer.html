@@ -1,6 +1,3 @@
-{% include 'palyer/imgx.html' %}
-{% include 'palyer/imgf.html' %}
-{% include 'palyer/jpeg.html' %}
 
 {% block head %}
 	<link rel="stylesheet" href="/css/player.css">
@@ -13,6 +10,11 @@
 {% endblock %}
 
 {% block body %}
+
+	{% include 'player/imgx.html' %}
+	{% include 'player/imgf.html' %}
+	{% include 'player/jpeg.html' %}
+
 	<template id="metadata-template">
 		<div id="metadata">
 			<ul>
@@ -23,21 +25,17 @@
 		</div>
 	</template>
 	<div id="app-composer">
-		<div id="fragment-player-slot" v-if="type">
-			<app-imgx-player v-if="source == 'imgx'"
-				:phases="phases"
-				:source="type">
-			</app-imgx-player>
-			<app-imgf-player v-else-if="source in ['.imgf', '.imgv']"
-				:phases="phases"
-				:source="type">
-			</app-imgf-player>
+		<div id="fragment-player-slot" v-if="player">
+			<component v-bind:is="player"
+				:progress="progress"
+				:phases="phases">
+			</component>
 		</div>
 		<metadata
 			:meta="meta">
 		</metadata>
 	</div>
-	<br>
-	<input id="imgx-input" class="file" value="Choose file" type="file" accept=".imgx" onchange="composer.expandIMGX()">
-	<input id="imgf-input" class="file" value="Choose file" type="file" accept=".imgf,.imgv" onchange="composer.expandIMGF()">
+
+	<input id="imgx-input" type="file" accept=".imgx" onchange="composer.expandIMGX()">
+	<input id="imgf-input" type="file" accept=".imgf,.imgv" onchange="composer.expandIMGF()">
 {% endblock %}

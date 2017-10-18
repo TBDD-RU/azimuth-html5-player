@@ -10,6 +10,8 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 	var scope = document.querySelector(elementSelector),
 		video;
 
+	let self = this;
+
 	this.FPS = 25.0;
 
 	let objectCache = {};
@@ -38,9 +40,16 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		$cache(".scrubber").value = video.currentTime;
 	}
 	$cache(".scrubber").onclick = function (e) {
-		video.currentTime = ((e.pageX - this.offsetLeft) / this.offsetWidth) * video.duration;
+		let offsetLeft = 0,
+			element = this;
+
+		do {
+			offsetLeft += element.offsetLeft;
+			element = element.offsetParent;
+		} while (element);
+
+		video.currentTime = ((e.pageX - offsetLeft) / this.offsetWidth) * video.duration;
 	}
-	scope.addEventListener("keyup", keyboardListener);
 
 	for (let button of scope.querySelectorAll("button")) {
 		button.addEventListener("keyup", (e) => {
@@ -70,33 +79,5 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 
 	this.loadSource = function (url) {
 		video.src = url;
-	}
-
-	function keyboardListener(event) {
-		let multiply = false;
-
-		switch (event.keyCode) {
-			case 32:
-				this.playSwitch();
-				event.preventDefault();
-				break;
-			case 38:
-				multiply = true;
-			case 39:
-				this.shiftFrame(true, multiply);
-				event.preventDefault();
-				break;
-			case 40:
-				multiply = true;
-			case 37:
-				this.shiftFrame(false, multiply);
-				event.preventDefault();
-				break;
-			case 86:
-				composerInstance.sizeSwitch();
-				break;
-			default:
-				break;
-		}
 	}
 }

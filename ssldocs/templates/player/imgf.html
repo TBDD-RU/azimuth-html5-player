@@ -5,7 +5,7 @@
 
 {% block body %}
 	<template id="imgf-player-template">
-		<div id="app-imgf-palyer">
+		<div id="app-imgf-player">
 
 			<img class="imgf" width="100%" onclick="composer.IMGFPlayer.playSwitch()">
 
@@ -23,8 +23,8 @@
 					<div class="times-bind">
 						<span class="time">0.00</span><span> / </span> <span class="duration">0.00</span>
 					</div>
-					<input class="file" value="Choose file" type="file" accept=".imgf,.imgv" onchange="composer.expandIMGF()">
-					<button onclick="composer.sizeSwitch()">Large / Small</button>
+					<input class="file" type="file" accept=".imgf,.imgv" onchange="composer.expandIMGF()">
+					<button onclick="composer.switchPlayerSize()">Large / Small</button>
 				</div>
 			</div>
 		</div>

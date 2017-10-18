@@ -5,7 +5,7 @@
 
 {% block body %}
 	<template id="imgx-player-template">
-		<div id="app-imgx-palyer">
+		<div id="app-imgx-player">
 			<video width="100%" onclick="composer.IMGXPlayer.playSwitch()">
 				<!-- <source src="detail.mp4"> -->
 			</video>
@@ -23,8 +23,8 @@
 					<div class="times-bind">
 						<span class="time">0.00</span><span> / </span> <span class="duration">0.00</span>
 					</div>
-					<input class="file" value="Choose file" type="file" accept=".imgx" onchange="composer.expandIMGX()">
-					<button onclick="composer.sizeSwitch()">Large / Small</button>
+					<input class="file" type="file" accept=".imgx" onchange="composer.expandIMGX()">
+					<button onclick="composer.switchPlayerSize()">Large / Small</button>
 				</div>
 			</div>
 		</div>

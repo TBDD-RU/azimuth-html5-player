@@ -36,6 +36,10 @@ function IMGF(arrayBuffer) {
 
 			offset += meta[0]; // image lenght
 		}
+
+		setTimeout(() => {
+			this.onreadyFunc(this);
+		}, 0);
 	}
 
 	this.onready = function (func) {

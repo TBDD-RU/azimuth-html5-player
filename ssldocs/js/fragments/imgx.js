@@ -31,7 +31,9 @@ function IMGX() {
 
 				let filename = stream.attributes.name.value;
 
-				info.datetime = new Date(+xml.querySelector("streams stream[name='" +filename + "'] frames frame[n='" + stream.querySelector("frame").textContent + "'] timecode").textContent);
+				let frame = stream.querySelector("frame");
+				
+				info.datetime = new Date(+xml.querySelector("streams stream[name='" +filename + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
 				info.complex = xml.querySelector("complexinfo name").textContent;
 				info.place = violation.querySelector("place name").textContent;
 				info.lpn = violation.querySelector("LPN").textContent;

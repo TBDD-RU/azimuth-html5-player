@@ -10,6 +10,8 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	var scope = document.querySelector(elementSelector),
 		video;
 
+	let self = this;
+
 	this.FPS = 25.0 / 3;
 
 	let ft = 1.0 / this.FPS * 1000; // frame duration
@@ -31,12 +33,26 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 
 	video = scope.querySelector(".imgf");
 	$cache(".scrubber").onclick = function (e) {
-		innerStop();
-		setTimeout(function () {
-			innerPlay(Math.floor(((e.pageX - this.offsetLeft) / this.offsetWidth) * frames.length));
+		let playFunc;
+
+		if (stop) {
+			playFunc = changeFrame;
+		} else {
+			innerStop();
+			playFunc = innerPlay;
+		}
+		setTimeout(() => {
+			let offsetLeft = 0,
+				element = this;
+
+			do {
+				offsetLeft += element.offsetLeft;
+				element = element.offsetParent;
+			} while (element);
+
+			playFunc(Math.floor(((e.pageX - offsetLeft) / this.offsetWidth) * frames.length));
 		}, ft);
 	}
-	scope.addEventListener("keyup", keyboardListener);
 
 	for (let button of scope.querySelectorAll("button")) {
 		button.addEventListener("keyup", (e) => {
@@ -52,6 +68,9 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	}
 
 	function changeFrame(offset) {
+		if (offset >= frames.length || offset < 0) {
+			return;
+		}
 		let jpeg = frames[offset].jpeg;
 		
 		video.src = URL.createObjectURL(
@@ -75,7 +94,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 			return;
 		}
 		
-		sheduler = setTimeout(function () {
+		sheduler = setTimeout(() => {
 			playLoop(offset);
 		}, ft);
 	}
@@ -114,6 +133,10 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	}
 
 	this.loadSource = function (frameBuffer) {
+		innerStop();
+
+		currentOffset = 0;
+
 		frames = frameBuffer;
 	
 		document.body.style.cursor = "wait";
@@ -127,34 +150,8 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		$cache(".scrubber").max = end;
 		$cache(".scrubber").value = start;
 
+		changeFrame(start);
+
 		document.body.style.cursor = "default";
-	}
-
-	function keyboardListener(event) {
-		let multiply = false;
-
-		switch (event.keyCode) {
-			case 32:
-				this.playSwitch();
-				event.preventDefault();
-				break;
-			case 38:
-				multiply = true;
-			case 39:
-				this.shiftFrame(true, multiply);
-				event.preventDefault();
-				break;
-			case 40:
-				multiply = true;
-			case 37:
-				this.shiftFrame(false, multiply);
-				event.preventDefault();
-				break;
-			case 86:
-				composerInstance.sizeSwitch();
-				break;
-			default:
-				break;
-		}
 	}
 }

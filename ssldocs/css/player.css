@@ -18,18 +18,22 @@
 	grid-row: 1;
 }
 
+#app-imgf-player .phasebar {
+	margin-top: 5px;
+}
+
 .phasebar {
 	font-size: 0;
-	margin-bottom: 4px;
+	margin-bottom: 3px;
 }
 
 .controlbar {
-	margin-top: 6px;
+	margin-top: 5px;
 }
 
 .times-bind {
 	display: inline-block;
-	margin-right: 8px;
+	margin-right: 7px;
 }
 
 #metadata ul {
