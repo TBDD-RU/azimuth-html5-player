@@ -19,6 +19,8 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	let frames = [],
 		duration = 0,
 		stop = true,
+		onplay = false,
+		scrolled = false,
 		currentOffset = 0,
 		sheduled;
 
@@ -32,27 +34,22 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	}
 
 	video = scope.querySelector(".imgf");
-	$cache(".scrubber").onclick = function (e) {
-		let playFunc;
-
-		if (stop) {
-			playFunc = changeFrame;
-		} else {
+	$cache(".scrubber").onmousedown = function (e) {
+		if (!stop) {
 			innerStop();
-			playFunc = innerPlay;
+			onplay = true;
 		}
-		setTimeout(() => {
-			let offsetLeft = 0,
-				element = this;
+		//setTimeout(() => {
+			changeFrame(innerGetScrubberOffset(e));
+		//}, 0);
 
-			do {
-				offsetLeft += element.offsetLeft;
-				element = element.offsetParent;
-			} while (element);
+		scrolled = false;
 
-			playFunc(Math.floor(((e.pageX - offsetLeft) / this.offsetWidth) * frames.length));
-		}, ft);
-	}
+		document.addEventListener("mousemove", scrub);
+		document.addEventListener("mouseup", scrubExit);
+
+		e.preventDefault();
+	};
 
 	for (let button of scope.querySelectorAll("button")) {
 		button.addEventListener("keyup", (e) => {
@@ -60,6 +57,44 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 				e.preventDefault();
 			}
 		});
+	}
+
+	function innerGetScrubberOffset(e) {
+		let scrubber = $cache(".scrubber");
+
+		let offsetLeft = 0,
+			element = scrubber;
+
+		do {
+			offsetLeft += element.offsetLeft;
+			element = element.offsetParent;
+		} while (element);
+
+		if (e.pageX < offsetLeft) {
+			return 0;
+		}
+
+		if (e.pageX > (offsetLeft + scrubber.offsetWidth)) {
+			return frames.length - 1;
+		}
+
+		return Math.floor(((e.pageX - offsetLeft) / scrubber.offsetWidth) * frames.length);
+	}
+
+	function scrub(e) {
+		scrolled = true;
+
+		changeFrame(innerGetScrubberOffset(e));
+	}
+
+	function scrubExit(e) {
+		if (onplay && !scrolled) {
+			innerPlay(currentOffset + 1);
+		}
+		onplay = false;
+
+		document.removeEventListener("mousemove", scrub);
+		document.removeEventListener("mouseup", scrubExit);
 	}
 
 	function updateTime(offset) {
@@ -72,7 +107,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 			return;
 		}
 		let jpeg = frames[offset].jpeg;
-		
+
 		video.src = URL.createObjectURL(
 			new Blob([jpeg], {type: "image/jpeg"})
 		);
@@ -93,7 +128,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 			stop = true;
 			return;
 		}
-		
+
 		sheduler = setTimeout(() => {
 			playLoop(offset);
 		}, ft);
@@ -125,7 +160,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		} else {
 			innerStop();
 		}
-	}
+	};
 
 	this.shiftFrame = function (forward, multiply) {
 		innerStop();
@@ -133,7 +168,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		let offset = multiply ? 10 : 1;
 
 		changeFrame(currentOffset + (forward ? offset : -offset));
-	}
+	};
 
 	this.loadSource = function (frameBuffer) {
 		innerStop();
@@ -141,7 +176,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		currentOffset = 0;
 
 		frames = frameBuffer;
-	
+
 		document.body.style.cursor = "wait";
 
 		let start = 0,
@@ -156,7 +191,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		changeFrame(start);
 
 		document.body.style.cursor = "default";
-	}
+	};
 
 	this.clear = function () {
 		innerStop();

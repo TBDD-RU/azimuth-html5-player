@@ -18,9 +18,7 @@ function formPage() {
 			phases: [],
 			huge: false,
 			meta: [],
-			currentReactor: null,
-			IMGXPlayer: null,
-			IMGFPlayer: null
+			currentPlayer: null
 		},
 		components: {
 			"app-imgf-player": {
@@ -49,20 +47,18 @@ function formPage() {
 						fragment = new IMGX(data);
 						fragment.onready(function (imgx) {
 							let violation;
-							
+
 							for (let uid of Object.keys(imgx.violations)) {
 								violation = imgx.violations[uid];
 								break;
 							}
 							if (violation.filename.endsWith(".mp4")) {
-								if (composer.currentReactor) {
-									composer.currentReactor.clear();
+								if (composer.currentPlayer) {
+									composer.currentPlayer.clear();
 								}
-								composer.IMGXPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", composer);
-								
-								composer.IMGXPlayer.loadSource(violation.src);
+								composer.currentPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", composer);
 
-								composer.currentReactor = composer.IMGXPlayer;
+								composer.currentPlayer.loadSource(violation.src);
 							} else {
 								alert("Not supported yet.")
 							}
@@ -72,14 +68,12 @@ function formPage() {
 
 						fragment = new IMGF(data);
 						fragment.onready(function (imgf) {
-							if (composer.currentReactor) {
-								composer.currentReactor.clear();
+							if (composer.currentPlayer) {
+								composer.currentPlayer.clear();
 							}
-							composer.IMGFPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
-							
-							composer.IMGFPlayer.loadSource(imgf.frames);
-							
-							composer.currentReactor = composer.IMGFPlayer;
+							composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
+
+							composer.currentPlayer.loadSource(imgf.frames);
 						});
 					} else if (filename.endsWith(".imgv")) {
 						fragment = new IMGF(data);
@@ -128,23 +122,26 @@ function initBlobReader(func) {
 }
 
 function keyboardListener(event) {
+	if (!composer.currentPlayer) {
+		return;
+	}
 	let multiply = false;
 
 	switch (event.keyCode) {
 		case 32:
-			composer.currentReactor.playSwitch();
+			composer.currentPlayer.playSwitch();
 			event.preventDefault();
 			break;
 		case 38:
 			multiply = true;
 		case 39:
-			composer.currentReactor.shiftFrame(true, multiply);
+			composer.currentPlayer.shiftFrame(true, multiply);
 			event.preventDefault();
 			break;
 		case 40:
 			multiply = true;
 		case 37:
-			composer.currentReactor.shiftFrame(false, multiply);
+			composer.currentPlayer.shiftFrame(false, multiply);
 			event.preventDefault();
 			break;
 		case 86:
