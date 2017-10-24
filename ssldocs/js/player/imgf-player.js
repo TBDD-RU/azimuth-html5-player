@@ -39,9 +39,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 			innerStop();
 			onplay = true;
 		}
-		//setTimeout(() => {
-			changeFrame(innerGetScrubberOffset(e));
-		//}, 0);
+		changeFrame(innerGetScrubberOffset(e));
 
 		scrolled = false;
 
@@ -129,7 +127,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 			return;
 		}
 
-		sheduler = setTimeout(() => {
+		sheduled = setTimeout(() => {
 			playLoop(offset);
 		}, ft);
 	}
