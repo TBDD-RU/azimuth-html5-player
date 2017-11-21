@@ -36,6 +36,7 @@ function formPage() {
 		},
 		methods: {
 			loadSource: function (filename, blob) {
+				this.meta = [];
 				this.file = filename;
 
 				let fragment;
@@ -60,7 +61,18 @@ function formPage() {
 
 								composer.currentPlayer.loadSource(violation.src);
 							} else {
-								alert("Not supported yet.")
+								alert("Not supported yet.");
+								return;
+							}
+							let metaDesc = {
+								"datetime": "Время нарушения",
+								"complex": "Тип комплекса",
+								"place": "Место нарушения",
+								"lpn": "ГРЗ",
+								"type": "Тип нарушения"
+							};
+							for (let key of Object.keys(metaDesc)) {
+								composer.meta.push({key: metaDesc[key], value: violation[key]});
 							}
 						});
 					} else if (filename.endsWith(".imgf")) {
@@ -74,6 +86,25 @@ function formPage() {
 							composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
 
 							composer.currentPlayer.loadSource(imgf.frames);
+
+							let pdefines = ["green", "red", "yellow"];
+
+							let phases = [];
+							let previous = null;
+							let color;
+							for (let frame of imgf.frames) {
+								color = pdefines[frame.lights];
+								if (color == previous) {
+									phases[phases.length - 1][0] += 1;
+								} else {
+									phases.push([1, color]);
+								}
+								previous = color;
+							}
+							for (let phase of phases) {
+								phase[0] = phase[0] / imgf.frames.length * 100;
+							}
+							composer.currentPlayer.definePhases(phases);
 						});
 					} else if (filename.endsWith(".imgv")) {
 						fragment = new IMGF(data);

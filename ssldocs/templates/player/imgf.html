@@ -9,11 +9,7 @@
 
 			<img class="imgf" width="100%" onclick="composer.currentPlayer.playSwitch()">
 
-			<div class="phasebar">
-				<span class="phase-green" style="width: 35%;"></span>
-				<span class="phase-yellow" style="width: 15%;"></span>
-				<span class="phase-red" style="width: 50%;"></span>
-			</div>
+			<div class="phasebar"></div>
 			<progress class="scrubber" v-bind:value="progress" style="width: 100%;"></progress>
 			<div class="controlbar">
 				<button onclick="composer.currentPlayer.shiftFrame()">&lt;</button>
@@ -23,6 +19,7 @@
 					<div class="times-bind">
 						<span class="time">0.00</span><span> / </span> <span class="duration">0.00</span>
 					</div>
+					<div class="phase-id"></div>
 					<button onclick="composer.switchPlayerSize()">Large / Small</button>
 				</div>
 			</div>

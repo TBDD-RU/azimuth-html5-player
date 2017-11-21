@@ -113,6 +113,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		currentOffset = offset;
 
 		updateTime(offset);
+		setPhase(frames[offset].lights);
 	}
 
 	function playLoop(offset) {
@@ -167,6 +168,29 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 
 		changeFrame(currentOffset + (forward ? offset : -offset));
 	};
+
+	function setPhase(phase) {
+		let pdefines = ["green", "red", "yellow"];
+		$cache(".phase-id").style.borderColor = pdefines[phase];
+	}
+
+	this.definePhases = function (phases) {
+		$cache(".phase-id").style.display = "inline-block";
+
+		let phasebar = scope.querySelector(".phasebar");
+
+		while (phasebar.firstChild) { // clear phasebar
+			phasebar.removeChild(phasebar.firstChild);
+		}
+
+		let ph;
+		for (let [length, color] of phases) {
+			ph = document.createElement("span");
+			ph.className = "phase-" + color;
+			ph.style.width = length + "%";
+			phasebar.appendChild(ph);
+		}
+	}
 
 	this.loadSource = function (frameBuffer) {
 		innerStop();

@@ -1,11 +1,13 @@
 /**
  * player.css
+ *
+ * by alkorgun
  */
 #app-composer {
 	margin: 3% 0 0 5%;
 	display: grid;
 	grid-gap: 20px;
-	grid-template-columns: 65% 15%;
+	grid-template-columns: 65% 30%;
 }
 
 #fragment-player-slot {
@@ -57,4 +59,13 @@
 
 .phase-yellow {
 	background-color: yellow;
+}
+
+.phase-id {
+	display: none;
+	border-radius: 50%;
+	border-width: 8px;
+	border-style: solid;
+	border-color: white;
+	width: 0px;
 }
