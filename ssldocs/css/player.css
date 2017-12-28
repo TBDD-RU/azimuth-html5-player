@@ -4,68 +4,71 @@
  * by alkorgun
  */
 #app-composer {
-	margin: 3% 0 0 5%;
-	display: grid;
-	grid-gap: 20px;
-	grid-template-columns: 65% 30%;
+  margin: 3% 0 0 5%;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: 65% 30%;
 }
 
 #fragment-player-slot {
-	grid-column: 1;
-	grid-row: 1;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 #metadata {
-	grid-column: 2;
-	grid-row: 1;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 #app-imgf-player .phasebar {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 .phasebar {
-	font-size: 0;
-	margin-bottom: 3px;
+  font-size: 0;
+  margin-bottom: 3px;
 }
 
 .controlbar {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 .times-bind {
-	display: inline-block;
-	margin-right: 7px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 7px;
 }
 
 #metadata ul {
-	list-style-type: none;
+  list-style-type: none;
 }
 
 .phase-red,
 .phase-green,
 .phase-yellow {
-	display: inline-block;
-	height: 4px;
+  display: inline-block;
+  height: 4px;
 }
 
 .phase-red {
-	background-color: red;
+  background-color: red;
 }
 
 .phase-green {
-	background-color: green;
+  background-color: green;
 }
 
 .phase-yellow {
-	background-color: yellow;
+  background-color: yellow;
 }
 
 .phase-id {
-	display: none;
-	border-radius: 50%;
-	border-width: 8px;
-	border-style: solid;
-	border-color: white;
-	width: 0px;
+  display: none;
+  border-radius: 50%;
+  border-width: 10px;
+  border-style: solid;
+  border-color: white;
+  vertical-align: middle;
+  margin-right: 7px;
+  width: 0px;
 }

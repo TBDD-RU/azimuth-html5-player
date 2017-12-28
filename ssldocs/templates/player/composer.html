@@ -1,7 +1,7 @@
 
 {% block head %}
 	<link rel="stylesheet" href="/css/player.css">
-	<script src="/js/ext/vue-2.5.2.min.js"></script>
+	<!-- <script src="/js/ext/vue-2.5.2.min.js"></script> -->
 	<script src="/js/ext/bufferpack.js"></script>
 	<script src="/js/ext/untar.js"></script>
 	<script src="/js/fragments/imgf.js"></script>
@@ -24,7 +24,7 @@
 			</ul>
 		</div>
 	</template>
-	<div id="app-composer">
+	<div id="app-composer" v-show="visible">
 		<div id="fragment-player-slot" v-if="player">
 			<component v-bind:is="player"
 				:progress="progress"
@@ -35,7 +35,4 @@
 			:meta="meta">
 		</metadata>
 	</div>
-	<br>
-	<input id="imgx-input" type="file" accept=".imgx" onchange="composer.expandIMGX()">
-	<input id="imgf-input" type="file" accept=".imgf,.imgv" onchange="composer.expandIMGF()">
 {% endblock %}

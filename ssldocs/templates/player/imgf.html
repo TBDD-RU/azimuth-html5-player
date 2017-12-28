@@ -12,15 +12,15 @@
 			<div class="phasebar"></div>
 			<progress class="scrubber" v-bind:value="progress" style="width: 100%;"></progress>
 			<div class="controlbar">
-				<button onclick="composer.currentPlayer.shiftFrame()">&lt;</button>
-				<button onclick="composer.currentPlayer.playSwitch()">Play / Stop</button>
-				<button onclick="composer.currentPlayer.shiftFrame(true)">&gt;</button>
+				<button class="btn btn-default" onclick="composer.currentPlayer.shiftFrame()"><img src="/images/feather/skip-back.svg" width="20"></button>
+				<button class="btn btn-default" onclick="composer.currentPlayer.playSwitch()"><img src="/images/feather-ext/play-pause.svg" width="20"></button>
+				<button class="btn btn-default" onclick="composer.currentPlayer.shiftFrame(true)"><img src="/images/feather/skip-forward.svg" width="20"></button>
 				<div style="float: right;">
 					<div class="times-bind">
 						<span class="time">0.00</span><span> / </span> <span class="duration">0.00</span>
 					</div>
 					<div class="phase-id"></div>
-					<button onclick="composer.switchPlayerSize()">Large / Small</button>
+					<button class="btn btn-default" onclick="composer.switchPlayerSize()"><img src="/images/feather/maximize.svg" width="20"></button>
 				</div>
 			</div>
 		</div>
