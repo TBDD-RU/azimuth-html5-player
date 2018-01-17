@@ -190,7 +190,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 			ph.style.width = length + "%";
 			phasebar.appendChild(ph);
 		}
-	}
+	};
 
 	this.loadSource = function (frameBuffer) {
 		innerStop();

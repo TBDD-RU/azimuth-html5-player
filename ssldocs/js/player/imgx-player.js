@@ -136,8 +136,11 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 	};
 
 	this.loadSource = function (url) {
+		video.hidden = false;
 		video.src = url;
 	};
 
-	this.clear = function () {};
+	this.clear = function () {
+		video.hidden = true;
+	};
 }

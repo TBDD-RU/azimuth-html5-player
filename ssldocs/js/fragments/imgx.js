@@ -31,41 +31,45 @@ function IMGX(arrayBuffer) {
 				for (let violation of xml.querySelectorAll("violation")) {
 					let info = {};
 
-					let stream, streams = violation.querySelectorAll("stream");
+					let primary,
+						streams = violation.querySelectorAll("stream");
 
 					if (streams.length == 1) {
-						stream = streams[0];
+						primary = streams[0];
 					} else {
-						stream = violation.querySelector("stream[primary='1']");
+						primary = violation.querySelector("stream[primary='1']");
 					}
 
-					let filename = stream.attributes.name.value;
+					let frame = primary.querySelector("frame");
 
-					if (!filename.endsWith(".mp4")) {
-						alert("IMGF(v)/JPEG streams not supported yet.");
-						return;
-					}
+					primary = primary.attributes.name.value;
 
-					let frame = stream.querySelector("frame");
-
-					info.datetime = new Date(+xml.querySelector("streams stream[name='" +filename + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
+					info.datetime = new Date(+xml.querySelector("streams stream[name='" + primary + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
 					info.complex = xml.querySelector("complexinfo name").textContent;
 					info.place = violation.querySelector("place name").textContent;
 					info.lpn = violation.querySelector("LPN").textContent;
 					info.type = violation.querySelector("type").textContent;
-					info.filename = filename;
+					info.primary = null;
+					info.streams = [];
 
-					let mp4;
-
-					for (let file of files) {
-						if (file.name.endsWith(filename)) {
-							mp4 = file.getBlobUrl();
-							break;
+					for (let stream of Array.from(streams)) {
+						for (let file of files) {
+							if (file.name == stream.attributes.name.value) {
+								let desc = {
+									name: file.name,
+									blob: file.blob,
+									source: file.getBlobUrl()
+								};
+								if (desc.name == primary) {
+									info.primary = desc;
+								}
+								info.streams.push(desc);
+								break;
+							}
 						}
-					} if (!mp4) {
-						alert("No MP4!");
+					} if (!info.primary) {
+						alert("No primary!");
 					}
-					info.src = mp4;
 
 					self.violations[violation.id] = info;
 				}
