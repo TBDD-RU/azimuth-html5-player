@@ -45,7 +45,7 @@ function IMGX(arrayBuffer) {
 					primary = primary.attributes.name.value;
 
 					info.datetime = new Date(+xml.querySelector("streams stream[name='" + primary + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
-					info.complex = xml.querySelector("complexinfo name").textContent;
+					info.controller = xml.querySelector("complexinfo name").textContent;
 					info.place = violation.querySelector("place name").textContent;
 					info.lpn = violation.querySelector("LPN").textContent;
 					info.type = violation.querySelector("type").textContent;

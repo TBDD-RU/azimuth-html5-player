@@ -20,6 +20,19 @@ function setComposer() {
 			phases: [],
 			huge: false,
 			meta: [],
+			metaDesc: {
+				"datetime": "Время нарушения",
+				"controller": "Тип комплекса",
+				"controller_serial": "Серийный номер комплекса",
+				"place": "Место нарушения",
+				"lpn": "ГРЗ",
+				"speed": "Скорость",
+				"limit": "Допустимая скорость",
+				"protocol": "Постановление",
+				"user": "Проверено",
+				"issue_text": "Причина браковки",
+				"type": "Тип нарушения"
+			},
 			currentPlayer: null,
 			visible: false
 		},
@@ -42,7 +55,20 @@ function setComposer() {
 			}
 		},
 		methods: {
-			loadSource: function (filename, blob, xml_id) {
+			loadMeta: function (sourceMeta, externalMeta) {
+				let preferedMeta;
+				for (let key of Object.keys(this.metaDesc)) {
+					if (externalMeta.hasOwnProperty(key) && externalMeta[key]) {
+						preferedMeta = externalMeta;
+					} else if (sourceMeta.hasOwnProperty(key) && sourceMeta[key]) {
+						preferedMeta = sourceMeta;
+					} else {
+						continue;
+					}
+					composer.meta.push({ key: this.metaDesc[key], value: preferedMeta[key] });
+				}
+			},
+			loadSource: function (filename, blob, externalMeta) {
 				if (this.currentPlayer) {
 					this.currentPlayer.clear();
 				}
@@ -57,10 +83,10 @@ function setComposer() {
 						fragment.onready(function (imgx) {
 							let violation;
 
-							if (xml_id) {
-								violation = imgx.violations[xml_id];
+							if (externalMeta && externalMeta.xml_id) {
+								violation = imgx.violations[externalMeta.xml_id];
 							} else {
-								for (xml_id of Object.keys(imgx.violations)) {
+								for (let xml_id of Object.keys(imgx.violations)) {
 									violation = imgx.violations[xml_id];
 									break;
 								}
@@ -88,6 +114,8 @@ function setComposer() {
 										(new IMGF(data)).onready(function (imgf) {
 											composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
 											composer.currentPlayer.loadSource(imgf.frames);
+
+											composer.currentPlayer.definePhases(composer.calcImgfPhases(imgf));
 										});
 									}).readAsArrayBuffer(violation.primary.blob);
 									break;
@@ -103,17 +131,7 @@ function setComposer() {
 								default:
 									alert("Ошибка: материал \"{name}\" имеет неизвестный тип.".format({name: violation.primary.name}));
 							}
-
-							let metaDesc = {
-								"datetime": "Время нарушения",
-								"complex": "Тип комплекса",
-								"place": "Место нарушения",
-								"lpn": "ГРЗ",
-								"type": "Тип нарушения"
-							};
-							for (let key of Object.keys(metaDesc)) {
-								composer.meta.push({ key: metaDesc[key], value: violation[key] });
-							}
+							composer.loadMeta(violation, externalMeta);
 						});
 					} else if (filename.endsWith(".imgf") || filename.endsWith(".imgv")) {
 						if (filename.endsWith(".imgf")) {
@@ -130,29 +148,22 @@ function setComposer() {
 										new Blob([imgf.frames[0].jpeg], {type: "image/jpeg"})
 									)
 								);
-								return;
-							}
-							composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
-							composer.currentPlayer.loadSource(imgf.frames);
+								
+								composer.loadMeta(imgf.frames[0], externalMeta);
+							} else {
+								composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
+								composer.currentPlayer.loadSource(imgf.frames);
 
-							let pdefines = ["green", "red", "yellow"];
+								let lpn = externalMeta ? externalMeta.lpn.toLowerCase() : null;
 
-							let phases = [];
-							let previous = null;
-							let color;
-							for (let frame of imgf.frames) {
-								color = pdefines[frame.lights];
-								if (color === previous) {
-									phases[phases.length - 1][0] += 1;
-								} else {
-									phases.push([1, color]);
+								for (let frame of imgf.frames) {
+									if (frame.lpn && (!lpn || frame.lpn == lpn)) {
+										composer.loadMeta(frame, externalMeta);
+										break;
+									}
 								}
-								previous = color;
+								composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
 							}
-							for (let phase of phases) {
-								phase[0] = phase[0] / imgf.frames.length * 100;
-							}
-							composer.currentPlayer.definePhases(phases);
 						});
 					} else if (filename.endsWith(".imgv")) {
 						fragment = new IMGF(data);
@@ -160,6 +171,26 @@ function setComposer() {
 						alert("Unsupported file type!");
 					}
 				}).readAsArrayBuffer(blob);
+			},
+			scanImgfPhases: function (imgf) {
+				let pdefines = ["green", "red", "yellow"];
+
+				let phases = [];
+				let previous = null;
+				let color;
+				for (let frame of imgf.frames) {
+					color = pdefines[frame.lights];
+					if (color === previous) {
+						phases[phases.length - 1][0] += 1;
+					} else {
+						phases.push([1, color]);
+					}
+					previous = color;
+				}
+				for (let phase of phases) {
+					phase[0] = phase[0] / imgf.frames.length * 100;
+				}
+				return phases;
 			},
 			switchPlayerSize: function () {
 				if (this.huge) {
