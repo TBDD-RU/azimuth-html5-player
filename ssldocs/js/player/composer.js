@@ -115,7 +115,7 @@ function setComposer() {
 											composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
 											composer.currentPlayer.loadSource(imgf.frames);
 
-											composer.currentPlayer.definePhases(composer.calcImgfPhases(imgf));
+											composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
 										});
 									}).readAsArrayBuffer(violation.primary.blob);
 									break;
