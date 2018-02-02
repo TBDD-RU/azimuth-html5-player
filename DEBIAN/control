@@ -1,0 +1,8 @@
+Package: azimuth-html5-player
+Priority: optional
+Provides: azimuth-player
+Maintainer: Al Korgun <korgun@tbdd.ru>
+Architecture: all
+Section: azimuth
+Description: azimuth imgf and imgx player
+Installed: 1300
