@@ -16,6 +16,12 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 
 	let ft = 1.0 / this.FPS * 1000; // frame duration
 
+	let lights = [
+		"green", // 0
+		"red", // 1
+		"yellow" // 2
+	];
+
 	let frames = [],
 		duration = 0,
 		stop = true,
@@ -100,6 +106,10 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		$cache(".scrubber").value = offset;
 	}
 
+	function updateLights(phase) {
+		$cache(".phase-id").style.borderColor = lights[phase];
+	}
+
 	function changeFrame(offset) {
 		if (offset >= frames.length || offset < 0) {
 			return;
@@ -113,7 +123,7 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		currentOffset = offset;
 
 		updateTime(offset);
-		setPhase(frames[offset].lights);
+		updateLights(frames[offset].lights);
 	}
 
 	function playLoop(offset) {
@@ -169,19 +179,18 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		changeFrame(currentOffset + (forward ? offset : -offset));
 	};
 
-	function setPhase(phase) {
-		let pdefines = ["green", "red", "yellow"];
-		$cache(".phase-id").style.borderColor = pdefines[phase];
-	}
-
 	this.definePhases = function (phases) {
+		switch (phases.length) {
+			case 0:
+				return;
+			case 1:
+				if (phases[0][1] == lights[0]) {
+					return;
+				} break;
+		}
 		$cache(".phase-id").style.display = "inline-block";
 
-		let phasebar = scope.querySelector(".phasebar");
-
-		while (phasebar.firstChild) { // clear phasebar
-			phasebar.removeChild(phasebar.firstChild);
-		}
+		let phasebar = $cache(".phasebar");
 
 		let ph;
 		for (let [length, color] of phases) {
@@ -192,7 +201,9 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 		}
 	};
 
-	this.loadSource = function (frameBuffer) {
+	this.loadSource = function (frameBuffer, startFrame) {
+		video.hidden = false;
+
 		innerStop();
 
 		currentOffset = 0;
@@ -206,6 +217,8 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 
 		duration = (frames[end].datetime - frames[start].datetime) / 1000;
 
+		start = startFrame || start;
+
 		$cache(".duration").innerHTML = duration.toFixed(3);
 		$cache(".scrubber").max = end;
 		$cache(".scrubber").value = start;
@@ -216,8 +229,17 @@ function EmbeddedIMGFPlayer(elementSelector, composerInstance) {
 	};
 
 	this.clear = function () {
+		video.hidden = true;
+
 		innerStop();
 		currentOffset = 0;
 		frames = [];
+
+		let phasebar = $cache(".phasebar");
+
+		while (phasebar.firstChild) {
+			phasebar.removeChild(phasebar.firstChild);
+		}
+		$cache(".phase-id").style.display = "none";
 	};
 }

@@ -103,7 +103,7 @@ function setComposer() {
 
 									setTimeout(() => {
 										composer.currentPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", composer);
-										composer.currentPlayer.loadSource(violation.primary.source);
+										composer.currentPlayer.loadSource(violation.primary.source, externalMeta.frame);
 									}, 0);
 									break;
 								case "imgv":
@@ -113,7 +113,7 @@ function setComposer() {
 									initBlobReader((data) => {
 										(new IMGF(data)).onready(function (imgf) {
 											composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
-											composer.currentPlayer.loadSource(imgf.frames);
+											composer.currentPlayer.loadSource(imgf.frames, externalMeta.frame);
 
 											composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
 										});
@@ -152,7 +152,7 @@ function setComposer() {
 								composer.loadMeta(imgf.frames[0], externalMeta);
 							} else {
 								composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
-								composer.currentPlayer.loadSource(imgf.frames);
+								composer.currentPlayer.loadSource(imgf.frames, externalMeta.frame);
 
 								let lpn = externalMeta ? externalMeta.lpn.toLowerCase() : null;
 
@@ -165,21 +165,23 @@ function setComposer() {
 								composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
 							}
 						});
-					} else if (filename.endsWith(".imgv")) {
-						fragment = new IMGF(data);
 					} else {
 						alert("Unsupported file type!");
 					}
 				}).readAsArrayBuffer(blob);
 			},
 			scanImgfPhases: function (imgf) {
-				let pdefines = ["green", "red", "yellow"];
+				let lights = [
+					"green", // 0
+					"red",  // 1
+					"yellow" // 2
+				];
 
 				let phases = [];
 				let previous = null;
 				let color;
 				for (let frame of imgf.frames) {
-					color = pdefines[frame.lights];
+					color = lights[frame.lights];
 					if (color === previous) {
 						phases[phases.length - 1][0] += 1;
 					} else {
@@ -204,10 +206,10 @@ function setComposer() {
 				}
 				this.huge = !this.huge;
 			},
-			expandFile: function () {
-				let file = document.querySelector("#imgx-input").files[0];
+			expandFile: function (file) {
 				if (!file) {
-					return alert("No IMGX!");
+					alert("No IMGX!");
+					return;
 				}
 				this.loadSource(file.name, file, null);
 			}

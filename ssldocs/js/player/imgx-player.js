@@ -135,6 +135,8 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		video.currentTime += forward ? frameDuration : -frameDuration;
 	};
 
+	this.definePhases = function (phases) {};
+
 	this.loadSource = function (url) {
 		video.hidden = false;
 		video.src = url;
