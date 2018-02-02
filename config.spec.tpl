@@ -9,3 +9,5 @@ Provides:  azimuth-player
 
 %description
 Azimuth Server imgf and imgx player
+
+%files
