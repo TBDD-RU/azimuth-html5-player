@@ -24,6 +24,10 @@
   margin-top: 5px;
 }
 
+.scrubber {
+  width: 100%;
+}
+
 .phasebar {
   font-size: 0;
   margin-bottom: 3px;
@@ -37,6 +41,14 @@
   display: inline-block;
   vertical-align: middle;
   margin-right: 7px;
+}
+
+.controlbar button > img {
+  width: 20px;
+}
+
+.right {
+  float: right;
 }
 
 #metadata ul {
