@@ -156,12 +156,15 @@ function setComposer() {
 
 								let lpn = externalMeta ? externalMeta.lpn.toLowerCase() : null;
 
+								let frameData = {};
 								for (let frame of imgf.frames) {
 									if (frame.lpn && (!lpn || frame.lpn == lpn)) {
-										composer.loadMeta(frame, externalMeta);
+										frameData = frame;
 										break;
 									}
 								}
+								composer.loadMeta(frameData, externalMeta);
+
 								composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
 							}
 						});
