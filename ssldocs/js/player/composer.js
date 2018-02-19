@@ -154,7 +154,7 @@ function setComposer() {
 								composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
 								composer.currentPlayer.loadSource(imgf.frames, externalMeta.frame);
 
-								let lpn = externalMeta ? externalMeta.lpn.toLowerCase() : null;
+								let lpn = externalMeta.lpn ? externalMeta.lpn.toLowerCase() : null;
 
 								let frameData = {};
 								for (let frame of imgf.frames) {
@@ -214,7 +214,7 @@ function setComposer() {
 					alert("No IMGX!");
 					return;
 				}
-				this.loadSource(file.name, file, null);
+				this.loadSource(file.name, file, {});
 			}
 		}
 	});
