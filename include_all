@@ -1,0 +1,41 @@
+#!/usr/bin/env python2
+
+# azimuth-player on build template renderer
+
+import os
+import re
+
+
+def include(mo):
+    sub_path = mo.group(1)
+
+    print "include directive found:", sub_path
+
+    filename = os.path.join("ssldocs/templates", sub_path)
+    if not os.path.isfile(filename):
+
+        print "can't find the file:", filename
+
+        return None
+
+    with open(filename) as fp:
+        html = fp.read()
+        html = re.sub("/images", "images", html)
+        html = re.sub("/css", "css", html)
+        html = re.sub("/js", "js", html)
+        return html
+
+
+if __name__ == "__main__":
+    with open("index.html.tpl") as fp:
+        index = fp.read()
+
+    include_cmp = re.compile("\{% include '(.+?)' %\}")
+
+    while True:
+        if not include_cmp.search(index):
+            break
+        index = include_cmp.sub(include, index)
+
+    with open("ssldocs/index.html", "w") as fp:
+        fp.write(index)
