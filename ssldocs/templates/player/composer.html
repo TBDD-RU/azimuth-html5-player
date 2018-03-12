@@ -33,14 +33,14 @@
 							{{ id }}
 						</option>
 					</select>
-					<button class="btn btn-default" v-on:click="showXML()"><img src="images/feather/file-text.svg" /></button>
+					<button class="btn btn-default" v-on:click="showXML()"><img src="/images/feather/file-text.svg" /></button>
 				</div><div>
 					<select class="form-control" v-model="menu.stream">
 						<option v-for="stream in streams" v-bind:value="stream">
 							{{ stream.name }}
 						</option>
 					</select>
-					<button class="btn btn-default" v-on:click="saveStream()"><img src="images/feather/save.svg" /></button>
+					<button class="btn btn-default" v-on:click="saveStream()"><img src="/images/feather/save.svg" /></button>
 				</div>
 			</div>
 			<ul>
