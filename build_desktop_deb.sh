@@ -6,6 +6,12 @@ echo -e "rendering index.html\n"
 
 ./include_all
 
+echo -e "\nincluding submodules\n"
+
+mkdir ssldocs/images
+
+mv feather-icons/feather* ssldocs/images/
+
 echo -e "\npreparing electron-linux64\n"
 
 mkdir electron-linux64
@@ -18,22 +24,24 @@ echo
 
 unzip electron.zip
 
+rm electron.zip
+
 cd ..
 
 cp -r ssldocs electron-linux64/
 cp electron-package.json electron-linux64/package.json
 cp index.js electron-linux64/
 
-echo -e "\npreparing nwjs-linux64\n"
+# echo -e "\npreparing nwjs-linux64\n"
 
-curl -o nwjs.tgz http://192.168.24.200/build-src/nwjs-sdk-v0.28.2-linux-x64.tar.gz
+# curl -o nwjs.tgz http://192.168.24.200/build-src/nwjs-sdk-v0.28.2-linux-x64.tar.gz
 
-tar xfzv nwjs.tgz
+# tar xfzv nwjs.tgz
 
-cp -r ssldocs nwjs-sdk-v0.28.2-linux-x64/
-cp nwjs-package.json nwjs-sdk-v0.28.2-linux-x64/package.json
+# cp -r ssldocs nwjs-sdk-v0.28.2-linux-x64/
+# cp nwjs-package.json nwjs-sdk-v0.28.2-linux-x64/package.json
 
 echo -e "\nbuilding..."
 
 tar cfjv azimuth-player-electron-linux64.tbz electron-linux64
-tar cfjv azimuth-player-nwjs-linux64.tbz nwjs-sdk-v0.28.2-linux-x64
+# tar cfjv azimuth-player-nwjs-linux64.tbz nwjs-sdk-v0.28.2-linux-x64

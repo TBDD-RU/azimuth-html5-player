@@ -2,20 +2,19 @@
  * Azimuth IMGX library
  * imgx.js
  * 
- * @requires: untar.js
+ * @requires: handy.js, untar.js
  * 
  * @author: alkorgun
  */
 function IMGX(arrayBuffer) {
 	this.violations = {};
-	this.streams = {};
 	this.onreadyFunc = null;
 
 	let self = this;
 
 	function initialize() {
 		untar(arrayBuffer).then((files) => {
-			let xml;
+			let dom, xml;
 
 			for (let file of files) {
 				if (file.name.endsWith("info.xml")) {
@@ -25,10 +24,10 @@ function IMGX(arrayBuffer) {
 			} if (!xml) {
 				alert("No XML!");
 			}
-			initBlobReader((result) => {
-				xml = (new DOMParser()).parseFromString(result, "text/xml");
+			initBlobReader((text) => {
+				dom = (new DOMParser()).parseFromString(text, "application/xml");
 
-				for (let violation of xml.querySelectorAll("violation")) {
+				for (let violation of dom.querySelectorAll("violation")) {
 					let info = {};
 
 					let primary,
@@ -44,13 +43,14 @@ function IMGX(arrayBuffer) {
 
 					primary = primary.attributes.name.value;
 
-					info.datetime = new Date(+xml.querySelector("streams stream[name='" + primary + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
-					info.controller = xml.querySelector("complexinfo name").textContent;
+					info.datetime = new Date(+dom.querySelector("streams stream[name='" + primary + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
+					info.controller = dom.querySelector("complexinfo name").textContent;
 					info.place = violation.querySelector("place name").textContent;
 					info.lpn = violation.querySelector("LPN").textContent;
 					info.type = violation.querySelector("type").textContent;
 					info.primary = null;
 					info.streams = [];
+					info.xml = xml;
 
 					for (let stream of Array.from(streams)) {
 						for (let file of files) {
@@ -83,12 +83,4 @@ function IMGX(arrayBuffer) {
 	}
 
 	initialize();
-}
-
-function initBlobReader(func) {
-	let reader = new FileReader();
-	reader.onload = function () {
-		func(reader.result);
-	}
-	return reader;
 }

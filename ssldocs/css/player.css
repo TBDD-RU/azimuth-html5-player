@@ -4,10 +4,10 @@
  * by alkorgun
  */
 #app-composer {
-  margin: 3% 0 0 5%;
+  margin: 3% 3% 0 5%;
   display: grid;
   grid-gap: 20px;
-  grid-template-columns: 65% 30%;
+  grid-template-columns: 2fr 1fr;
 }
 
 #fragment-player-slot {
@@ -53,6 +53,15 @@
 
 #metadata ul {
   list-style-type: none;
+}
+
+#metadata > div {
+  margin-bottom: 20px;
+}
+
+#metadata select {
+  display: inline-block;
+  width: calc(100% - 56px);
 }
 
 .phase-red,

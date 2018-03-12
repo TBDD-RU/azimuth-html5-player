@@ -7,7 +7,6 @@
  * @author: alkorgun
  */
 function IMGF(arrayBuffer) {
-	this.violations = {};
 	this.frames = [];
 	this.onreadyFunc = null;
 

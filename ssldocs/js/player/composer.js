@@ -2,13 +2,13 @@
  * Azimuth IMGX/IMGF player composer
  * composer.js
  * 
- * @requires: vue.js, fragments/{imgx.js,imgf.js}
+ * @requires: vue.js, gluon.js, handy.js, fragments/{imgx.js,imgf.js}
  *
  * @author: alkorgun
  */
 var composer;
 
-function setComposer() {
+function setComposer(entire) {
 	composer = new Vue({
 		el: "#app-composer",
 		data: {
@@ -16,6 +16,7 @@ function setComposer() {
 			player: undefined,
 			violations: {},
 			streams: [],
+			menu: { violation: null, stream: null },
 			progress: 0,
 			phases: [],
 			huge: false,
@@ -34,6 +35,7 @@ function setComposer() {
 				"type": "Тип нарушения"
 			},
 			currentPlayer: null,
+			visibleMenu: entire || false,
 			visible: false
 		},
 		components: {
@@ -48,10 +50,27 @@ function setComposer() {
 			"app-jpeg-player": {
 				template: "#jpeg-player-template",
 				props: ["phases", "progress"]
+			}
+		},
+		watch: {
+			"menu.violation": function (current, old) {
+				if (!old || !current) {
+					// skip initial setup
+					return;
+				}
+				this.choseIMGXViolation(current);
 			},
-			"metadata": {
-				template: "#metadata-template",
-				props: ["meta"]
+			"menu.stream": function (current, old) {
+				if (!old || !current) {
+					// skip initial setup
+					return;
+				}
+				if (current.name.endsWith(".pdf")) {
+					this.menu.stream = old;
+				} else if (old.name.endsWith(".pdf")) {
+					return;
+				}
+				this.loadIMGXStream(current);
 			}
 		},
 		methods: {
@@ -65,15 +84,15 @@ function setComposer() {
 					} else {
 						continue;
 					}
-					composer.meta.push({ key: this.metaDesc[key], value: preferedMeta[key] });
+					this.meta.push({ key: this.metaDesc[key], value: preferedMeta[key] });
 				}
 			},
 			loadSource: function (filename, blob, externalMeta) {
-				if (this.currentPlayer) {
-					this.currentPlayer.clear();
-				}
-				this.meta = [];
-				this.file = filename;
+				self = this;
+
+				self.file = filename;
+				self.violations = {};
+				self.menu.violation = null;
 
 				let fragment;
 
@@ -81,6 +100,8 @@ function setComposer() {
 					if (filename.endsWith(".imgx")) {
 						fragment = new IMGX(data);
 						fragment.onready(function (imgx) {
+							self.violations = imgx.violations;
+
 							let violation;
 
 							if (externalMeta && externalMeta.xml_id) {
@@ -89,70 +110,35 @@ function setComposer() {
 								for (let xml_id of Object.keys(imgx.violations)) {
 									violation = imgx.violations[xml_id];
 									break;
+								} if (!violation) {
+									alert("Ошибка: не удалось извлечь материалы из файла с нарушением.");
+									return;
 								}
-							} if (!violation) {
-								alert("Ошибка: не удалось извлечь материалы из файла с нарушением.");
-								return;
 							}
-
-							let spl = violation.primary.name.split(".");
-							let ext = spl[spl.length - 1].toLowerCase();
-							switch (ext) {
-								case "mp4":
-									composer.player = "app-imgx-player";
-
-									setTimeout(() => {
-										composer.currentPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", composer);
-										composer.currentPlayer.loadSource(violation.primary.source, externalMeta.frame);
-									}, 0);
-									break;
-								case "imgv":
-								case "imgf":
-									composer.player = "app-imgf-player";
-
-									initBlobReader((data) => {
-										(new IMGF(data)).onready(function (imgf) {
-											composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
-											composer.currentPlayer.loadSource(imgf.frames, externalMeta.frame);
-
-											composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
-										});
-									}).readAsArrayBuffer(violation.primary.blob);
-									break;
-								case "jpg":
-								case "jpeg":
-									composer.player = "app-jpeg-player";
-
-									setTimeout(() => {
-										composer.currentPlayer = new EmbeddedJPEGPlayer("#app-jpeg-player", composer);
-										composer.currentPlayer.loadSource(violation.primary.source);
-									}, 0);
-									break;
-								default:
-									alert("Ошибка: материал \"{name}\" имеет неизвестный тип.".format({name: violation.primary.name}));
-							}
-							composer.loadMeta(violation, externalMeta);
+							self.choseIMGXViolation(violation, externalMeta);
 						});
 					} else if (filename.endsWith(".imgf") || filename.endsWith(".imgv")) {
 						if (filename.endsWith(".imgf")) {
-							this.player = "app-imgf-player";
+							self.player = "app-imgf-player";
 						} else {
-							this.player = "app-jpeg-player";
+							self.player = "app-jpeg-player";
 						}
+						self.clear();
+
 						fragment = new IMGF(data);
 						fragment.onready(function (imgf) {
 							if (filename.endsWith(".imgv")) {
-								composer.currentPlayer = new EmbeddedJPEGPlayer("#app-jpeg-player", composer);
-								composer.currentPlayer.loadSource(
+								self.currentPlayer = new EmbeddedJPEGPlayer("#app-jpeg-player", self);
+								self.currentPlayer.loadSource(
 									URL.createObjectURL(
 										new Blob([imgf.frames[0].jpeg], {type: "image/jpeg"})
 									)
 								);
 								
-								composer.loadMeta(imgf.frames[0], externalMeta);
+								self.loadMeta(imgf.frames[0], externalMeta);
 							} else {
-								composer.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", composer);
-								composer.currentPlayer.loadSource(imgf.frames, externalMeta.frame);
+								self.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", self);
+								self.currentPlayer.loadSource(imgf.frames, externalMeta.frame);
 
 								let lpn = externalMeta.lpn ? externalMeta.lpn.toLowerCase() : null;
 
@@ -163,15 +149,88 @@ function setComposer() {
 										break;
 									}
 								}
-								composer.loadMeta(frameData, externalMeta);
+								self.loadMeta(frameData, externalMeta);
 
-								composer.currentPlayer.definePhases(composer.scanImgfPhases(imgf));
+								self.currentPlayer.definePhases(self.scanImgfPhases(imgf));
 							}
 						});
 					} else {
-						alert("Unsupported file type!");
+						alert("This file type is not suppoted!");
 					}
 				}).readAsArrayBuffer(blob);
+			},
+			choseIMGXViolation: function (violation, meta) {
+				if (!this.menu.violation) {
+					this.menu.violation = violation;
+				}
+				this.clear();
+
+				meta = meta || {};
+
+				this.streams = violation.streams;
+
+				this.loadIMGXStream(violation.primary, meta.frame);
+				this.loadMeta(violation, meta);
+			},
+			loadIMGXStream: function (stream, frame) {
+				if (!this.menu.stream) {
+					this.menu.stream = stream;
+				}
+				self = this;
+
+				let spl = stream.name.split(".");
+				let ext = spl[spl.length - 1].toLowerCase();
+				switch (ext) {
+					case "mp4":
+						self.player = "app-imgx-player";
+
+						setTimeout(() => {
+							self.currentPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", self);
+							self.currentPlayer.loadSource(stream.source, frame);
+						}, 0);
+						break;
+					case "imgv":
+					case "imgf":
+						self.player = "app-imgf-player";
+
+						initBlobReader((data) => {
+							(new IMGF(data)).onready(function (imgf) {
+								self.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", self);
+								self.currentPlayer.loadSource(imgf.frames, frame);
+
+								self.currentPlayer.definePhases(self.scanImgfPhases(imgf));
+							});
+						}).readAsArrayBuffer(stream.blob);
+						break;
+					case "jpg":
+					case "jpeg":
+						self.player = "app-jpeg-player";
+
+						setTimeout(() => {
+							self.currentPlayer = new EmbeddedJPEGPlayer("#app-jpeg-player", self);
+							self.currentPlayer.loadSource(stream.source);
+						}, 0);
+						break;
+					case "pdf":
+						let file = new File([stream.blob], stream.name, {type: "application/pdf"});
+
+						ifElectron((gluon) => {
+							gluon.open(file);
+						}, () => {
+							open(URL.createObjectURL(file), "_blank");
+						});
+						break;
+					default:
+						alert("Отображение выбранного материала ( {name} ) не поддерживается.".format({name: stream.name}));
+				}
+			},
+			clear: function () {
+				if (this.currentPlayer) {
+					this.currentPlayer.clear();
+				}
+				this.meta = [];
+				this.streams = [];
+				this.menu.stream = null;
 			},
 			scanImgfPhases: function (imgf) {
 				let lights = [
@@ -215,18 +274,22 @@ function setComposer() {
 					return;
 				}
 				this.loadSource(file.name, file, {});
-			}
+			},
+			showXML: function () {
+				let file = new File([this.menu.violation.xml], "info.xml", {type: "application/xml"});
+
+				ifElectron((gluon) => {
+					gluon.open(file);
+				}, () => {
+					open(URL.createObjectURL(file), "_blank");
+				});
+			},
+			saveStream: function () {
+				downloadFile(this.menu.stream.source, this.menu.stream.name);
+			},
 		}
 	});
 	document.body.addEventListener("keyup", keyboardListener);
-}
-
-function initBlobReader(func) {
-	let reader = new FileReader();
-	reader.onload = function () {
-		func(reader.result);
-	}
-	return reader;
 }
 
 function keyboardListener(event) {
@@ -259,7 +322,3 @@ function keyboardListener(event) {
 			break;
 	}
 }
-
-String.prototype.format = function (desc) {
-	return this.replace(/\{(.*?)\}/g, (function (data, key) { return desc[key] || ""; }));
-};

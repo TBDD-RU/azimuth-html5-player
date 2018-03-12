@@ -1,19 +1,21 @@
-// default index.js
-
-const {app, BrowserWindow} = require("electron");
-const url = require("url");
+/**
+ * Azimuth-player electron core script
+ * index.js
+ *
+ * @author: alkorgun
+ */
+const electron = require("electron");
 const path = require("path");
+const fs = require("fs");
+
+const {app, BrowserWindow, ipcMain} = electron;
 
 let win;
 
-function createWindow() {
-	win = new BrowserWindow({width: 640, height: 360});
+function createMainWindow() {
+	win = new BrowserWindow({width: 960, height: 540});
 
-	win.loadURL(url.format({
-		pathname: path.join(__dirname, "ssldocs/index.html"),
-		protocol: "file:",
-		slashes: true
-	}));
+	win.loadURL("file://{fld}/ssldocs/index.html".format({fld: __dirname}));
 
 	//win.webContents.openDevTools();
 
@@ -22,7 +24,7 @@ function createWindow() {
 	});
 }
 
-app.on("ready", createWindow);
+app.on("ready", createMainWindow);
 
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
@@ -32,6 +34,30 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
 	if (win === null) {
-		createWindow();
+		createMainWindow();
 	}
 });
+
+const webview = "<webview style=\"height: 100%\"  src=\"file://{filename}\" plugins></webview>";
+
+ipcMain.on("open", (event, filename, clear) => {
+	let tmp = new BrowserWindow({width: 960, height: 720});
+
+	tmp.loadURL("data:text/html;base64," + b64encode(webview.format({filename: filename})));
+
+	if (clear) {
+		tmp.on("closed", () => {
+			if (fs.existsSync(filename)) {
+				fs.unlinkSync(filename);
+			}
+		});
+	}
+});
+
+function b64encode(str) {
+	return Buffer.from(str).toString("base64");
+}
+
+String.prototype.format = function (desc) {
+	return this.replace(/\{(.*?)\}/g, (function (data, key) { return desc[key] || ""; }));
+};

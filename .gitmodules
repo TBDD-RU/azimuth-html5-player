@@ -1,0 +1,3 @@
+[submodule "feather-icons"]
+	path = feather-icons
+	url = http://192.168.24.200/git/alkorgun/feather-icons

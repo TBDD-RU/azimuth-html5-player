@@ -5,6 +5,8 @@
 	<!-- <script src="/js/ext/vue-2.5.2.min.js"></script> -->
 	<script src="/js/ext/bufferpack.js"></script>
 	<script src="/js/ext/untar.js"></script>
+	<script src="/js/lib/gluon.js"></script>
+	<script src="/js/lib/handy.js"></script>
 	<script src="/js/fragments/imgf.js"></script>
 	<script src="/js/fragments/imgx.js"></script>
 	<script src="/js/player/composer.js"></script>
@@ -16,15 +18,6 @@
 	{% include 'player/imgf.html' %}
 	{% include 'player/jpeg.html' %}
 
-	<template id="metadata-template">
-		<div id="metadata">
-			<ul>
-				<li v-for="data in meta">
-					{{ "{key}: {value}".format(data) }}
-				</li>
-			</ul>
-		</div>
-	</template>
 	<div id="app-composer" v-show="visible">
 		<div id="fragment-player-slot" v-if="player">
 			<component v-bind:is="player"
@@ -32,8 +25,29 @@
 				:phases="phases">
 			</component>
 		</div>
-		<metadata
-			:meta="meta">
-		</metadata>
+		<div id="metadata">
+			<div v-if="visibleMenu" v-show="Object.keys(violations).length">
+				<div>
+					<select class="form-control" v-model="menu.violation">
+						<option v-for="(value, id) in violations" v-bind:value="value">
+							{{ id }}
+						</option>
+					</select>
+					<button class="btn btn-default" v-on:click="showXML()"><img src="images/feather/file-text.svg" /></button>
+				</div><div>
+					<select class="form-control" v-model="menu.stream">
+						<option v-for="stream in streams" v-bind:value="stream">
+							{{ stream.name }}
+						</option>
+					</select>
+					<button class="btn btn-default" v-on:click="saveStream()"><img src="images/feather/save.svg" /></button>
+				</div>
+			</div>
+			<ul>
+				<li v-for="data in meta">
+					{{ "{key}: {value}".format(data) }}
+				</li>
+			</ul>
+		</div>
 	</div>
 <!-- endblock -->
