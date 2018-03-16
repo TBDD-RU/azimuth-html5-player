@@ -7,21 +7,24 @@
  * @author: alkorgun
  */
 const ifElectron = (function () {
-	let isElectron = navigator.userAgent.indexOf("Electron/") > -1;
-	let tempFolder = "/tmp";
+	let electron = navigator.userAgent.indexOf("Electron/") > -1;
+	let tmpdir;
 
 	let self = {};
 
-	if (isElectron) {
+	if (electron) {
 		self.electron = require("electron");
 		self.path = require("path");
 		self.fs = require("fs");
+		self.os = require("os");
+
+		tmpdir = self.os.tmpdir();
 
 		self.send = self.electron.ipcRenderer.send;
 
 		self.open = function (file, filename) {
 			initBlobReader((bytes) => {
-				filename = self.path.join(tempFolder, file.name || filename);
+				filename = self.path.join(tmpdir, file.name || filename);
 
 				self.fs.writeFile(filename, new Uint8Array(bytes), () => {
 					self.send("open", filename, "clear");
@@ -31,7 +34,7 @@ const ifElectron = (function () {
 	}
 
 	function ifElectron(desktopCb, browserCb) {
-		if (isElectron) {
+		if (electron) {
 			desktopCb(self);
 		} else if (browserCb) {
 			browserCb();

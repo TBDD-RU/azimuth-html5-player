@@ -13,7 +13,7 @@ const {app, BrowserWindow, ipcMain} = electron;
 let win;
 
 function createMainWindow() {
-	win = new BrowserWindow({width: 960, height: 540});
+	win = new BrowserWindow({width: 960, height: 720, icon: path.join(__dirname, "assets/tbdd.png")});
 
 	win.loadURL("file://{fld}/ssldocs/index.html".format({fld: __dirname}));
 
@@ -38,7 +38,7 @@ app.on("activate", () => {
 	}
 });
 
-const webview = "<webview style=\"height: 100%\"  src=\"file://{filename}\" plugins></webview>";
+const webview = "<webview style=\"height: 100%\" src=\"file://{filename}\" plugins></webview>";
 
 ipcMain.on("open", (event, filename, clear) => {
 	let tmp = new BrowserWindow({width: 960, height: 720});

@@ -2,7 +2,7 @@
 </html>
 <head>
 	<meta charset="utf-8">
-	<title>Azimuth IMGX-player</title>
+	<title>Azimuth IMGX-viewer</title>
 	<link rel="stylesheet" href="css/ext/bootstrap-3.3.7.min.css">
 	<script src="js/ext/vue-2.5.2.min.js"></script>
 </head>
