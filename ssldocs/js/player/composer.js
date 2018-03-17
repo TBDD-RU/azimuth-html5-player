@@ -92,7 +92,6 @@ function setComposer(entire) {
 
 				self.file = filename;
 				self.violations = {};
-				self.menu.violation = null;
 
 				let fragment;
 
@@ -115,14 +114,14 @@ function setComposer(entire) {
 									return;
 								}
 							}
-							self.choseIMGXViolation(violation, externalMeta);
+							self.choseIMGXViolation(violation, externalMeta, true);
 						});
 					} else if (filename.endsWith(".imgf") || filename.endsWith(".imgv")) {
-						if (filename.endsWith(".imgf")) {
-							self.player = "app-imgf-player";
-						} else {
-							self.player = "app-jpeg-player";
-						}
+						self.player = filename.endsWith(".imgf") ? (
+							"app-imgf-player"
+						) : (
+							"app-jpeg-player"
+						);
 						self.clear();
 
 						fragment = new IMGF(data);
@@ -134,7 +133,6 @@ function setComposer(entire) {
 										new Blob([imgf.frames[0].jpeg], {type: "image/jpeg"})
 									)
 								);
-								
 								self.loadMeta(imgf.frames[0], externalMeta);
 							} else {
 								self.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", self);
@@ -159,8 +157,8 @@ function setComposer(entire) {
 					}
 				}).readAsArrayBuffer(blob);
 			},
-			choseIMGXViolation: function (violation, meta) {
-				if (!this.menu.violation) {
+			choseIMGXViolation: function (violation, meta, set) {
+				if (set) {
 					this.menu.violation = violation;
 				}
 				this.clear();
@@ -169,11 +167,11 @@ function setComposer(entire) {
 
 				this.streams = violation.streams;
 
-				this.loadIMGXStream(violation.primary, meta.frame);
+				this.loadIMGXStream(violation.primary, meta.frame, true);
 				this.loadMeta(violation, meta);
 			},
-			loadIMGXStream: function (stream, frame) {
-				if (!this.menu.stream) {
+			loadIMGXStream: function (stream, frame, set) {
+				if (set) {
 					this.menu.stream = stream;
 				}
 				self = this;
@@ -230,7 +228,6 @@ function setComposer(entire) {
 				}
 				this.meta = [];
 				this.streams = [];
-				this.menu.stream = null;
 			},
 			scanImgfPhases: function (imgf) {
 				let lights = [
