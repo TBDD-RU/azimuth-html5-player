@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-# azimuth-player on build template renderer
+# azimuth-viewer on-build template renderer
 
 import os
 import re

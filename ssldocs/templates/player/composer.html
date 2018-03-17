@@ -26,8 +26,8 @@
 			</component>
 		</div>
 		<div id="metadata">
-			<div v-if="visibleMenu" v-show="Object.keys(violations).length">
-				<div>
+			<div v-show="Object.keys(violations).length">
+				<div v-if="entireGui">
 					<select class="form-control" v-model="menu.violation">
 						<option v-for="(value, id) in violations" v-bind:value="value">
 							{{ id }}

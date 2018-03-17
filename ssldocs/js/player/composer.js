@@ -35,7 +35,7 @@ function setComposer(entire) {
 				"type": "Тип нарушения"
 			},
 			currentPlayer: null,
-			visibleMenu: entire || false,
+			entireGui: entire || false,
 			visible: false
 		},
 		components: {

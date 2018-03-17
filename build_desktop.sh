@@ -6,7 +6,7 @@ echo -e "rendering index.html...\n"
 
 ./include_all
 
-echo -e "\nincluding submodules...\n"
+echo -e "\nincluding submodules..."
 
 git submodule update --init
 
