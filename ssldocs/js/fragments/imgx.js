@@ -43,7 +43,7 @@ function IMGX(arrayBuffer) {
 
 					primary = primary.attributes.name.value;
 
-					info.datetime = new Date(+dom.querySelector("streams stream[name='" + primary + "'] frames frame[n='" + (frame ? frame.textContent : 0) + "'] timecode").textContent);
+					info.datetime = new Date((+dom.querySelector("streams stream[name='{p}'] frames frame[n='{f}'] timecode".format({p: primary, f: (frame ? frame.textContent : 0)})).textContent)*1000);
 					info.controller = dom.querySelector("complexinfo name").textContent;
 					info.place = violation.querySelector("place name").textContent;
 					info.lpn = violation.querySelector("LPN").textContent;
