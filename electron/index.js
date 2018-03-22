@@ -54,6 +54,16 @@ ipcMain.on("open", (event, filename, clear) => {
 	}
 });
 
+ipcMain.once("get-argv", (event) => {
+	let argv = process.argv,
+		path = null;
+
+	if (argv.length > 1) {
+		path = argv[argv.length - 1];
+	}
+	event.sender.send("got-file", path);
+});
+
 function b64encode(str) {
 	return Buffer.from(str).toString("base64");
 }

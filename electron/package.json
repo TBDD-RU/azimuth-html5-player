@@ -28,7 +28,19 @@
           "arch": [ "ia32" ]
         }
       ],
+      "fileAssociations": [
+        {
+          "ext": [
+            "imgx",
+            "imgf",
+            "imgv"
+          ]
+        }
+      ],
       "icon": "assets/tbdd.ico"
+    },
+    "nsis": {
+      "oneClick": false
     }
   },
   "scripts": {
