@@ -54,7 +54,7 @@ ipcMain.on("open", (event, filename, clear) => {
 	}
 });
 
-ipcMain.once("get-argv", (event) => {
+ipcMain.once("get-argv", (event) => { // TODO: additionalArguments with 2.0
 	let argv = process.argv,
 		path = null;
 
