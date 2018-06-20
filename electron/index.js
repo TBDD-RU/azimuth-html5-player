@@ -7,13 +7,25 @@
 const electron = require("electron");
 const path = require("path");
 const fs = require("fs");
+const stateKeeper = require("electron-window-state");
 
 const {app, BrowserWindow, ipcMain} = electron;
 
 let win;
 
 function createMainWindow() {
-	win = new BrowserWindow({width: 960, height: 720, icon: path.join(__dirname, "assets/tbdd.png")});
+	let state = stateKeeper({defaultWidth: 960, defaultHeight: 720});
+
+	win = new BrowserWindow({
+		icon: path.join(__dirname, "assets/tbdd.png"),
+		x: state.x,
+		y: state.y,
+		width: state.width,
+		height: state.height,
+		webPreferences: { additionalArguments: getArgs() }
+	});
+
+	state.manage(win);
 
 	win.loadURL("file://{fld}/ssldocs/index.html".format({fld: __dirname}));
 
@@ -54,15 +66,15 @@ ipcMain.on("open", (event, filename, clear) => {
 	}
 });
 
-ipcMain.once("get-argv", (event) => { // TODO: additionalArguments with 2.0
+function getArgs() {
 	let argv = process.argv,
-		path = null;
+		args = [];
 
 	if (argv.length > 1) {
-		path = argv[argv.length - 1];
+		args.push(argv[argv.length - 1]);
 	}
-	event.sender.send("got-file", path);
-});
+	return args
+}
 
 function b64encode(str) {
 	return Buffer.from(str).toString("base64");

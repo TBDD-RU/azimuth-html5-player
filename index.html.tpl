@@ -14,23 +14,19 @@
 	<script>
 
 addEventListener("load", () => {
-	let __electron = require("electron");
 	let __path = require("path");
-	let __ipc = __electron.ipcRenderer;
 
-	let formats = [
+	let filename = process.argv.slice(-1)[0];
+
+	let exts = [
 		".imgx",
 		".imgf",
 		".imgv"
 	];
 
-	__ipc.once("got-file", (event, filename) => {
-		if (formats.indexOf(__path.extname(filename)) > -1) {
-			expandPath(filename);
-		}
-	});
-
-	__ipc.send("get-argv");
+	if (exts.indexOf(__path.extname(filename)) > -1) {
+		expandPath(filename);
+	}
 });
 
 for (let event of ["dragover", "dragleave", "dragend"]) {

@@ -6,7 +6,7 @@ TMP_DIR=azimuth-html5-player_$VERSION-1_all
 
 SRV_DIR=/srv/www/ssldocs
 
-echo "Creating temporary directoty and copying files"
+echo "Creating temporary directory and copying files"
 
 mkdir -p "$TMP_DIR$SRV_DIR"
 
