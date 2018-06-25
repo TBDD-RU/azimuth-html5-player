@@ -14,7 +14,7 @@ const {app, BrowserWindow, ipcMain} = electron;
 let win;
 
 function createMainWindow() {
-	let state = stateKeeper({defaultWidth: 960, defaultHeight: 720});
+	let state = stateKeeper({defaultWidth: 960, defaultHeight: 768});
 
 	win = new BrowserWindow({
 		icon: path.join(__dirname, "assets/tbdd.png"),
@@ -53,7 +53,7 @@ app.on("activate", () => {
 const webview = "<webview style=\"height: 100%\" src=\"file://{filename}\" plugins></webview>";
 
 ipcMain.on("open", (event, filename, clear) => {
-	let tmp = new BrowserWindow({width: 960, height: 720});
+	let tmp = new BrowserWindow({width: 960, height: 768});
 
 	tmp.loadURL("data:text/html;base64," + b64encode(webview.format({filename: filename})));
 
