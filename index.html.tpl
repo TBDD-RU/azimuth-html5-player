@@ -15,9 +15,9 @@
 	width: 50%;
 }
 
-#imgx-input-label img { width: 100%; }
+#imgx-input-label:hover { cursor: pointer; }
 
-#imgx-input-label span { font-size: 22px; }
+#imgx-input-label img { width: 100%; }
 
 #imgx-input { display: none; }
 
@@ -27,8 +27,6 @@
 	<div id="initial-frame">
 		<label id="imgx-input-label" for="imgx-input">
 			<img src="images/feather/file.svg">
-			<br>
-			<span>Кликните на значок, чтобы выбрать файл, либо перетащите его сюда.</span>
 		</label>
 		<input id="imgx-input" type="file" accept=".imgf,.imgv,.imgx" onchange="expandFile(this)">
 	</div>
