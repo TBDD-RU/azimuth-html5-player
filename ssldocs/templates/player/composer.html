@@ -37,7 +37,7 @@
 				</div><div>
 					<select class="form-control" v-model="menu.stream">
 						<option v-for="stream in streams" v-bind:value="stream">
-							{{ stream.name }}
+							{{ stream.display_name }}
 						</option>
 					</select>
 					<button class="btn btn-default" v-on:click="saveStream()"><img src="/images/feather/save.svg" /></button>

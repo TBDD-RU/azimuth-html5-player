@@ -1,9 +1,9 @@
 /**
  * Azimuth IMGX player
  * imgx-player.js
- * 
+ *
  * @requires: fragments/imgx.js
- * 
+ *
  * @author: alkorgun
  */
 function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
@@ -14,7 +14,15 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 
 	this.FPS = 25.0;
 
-	let sync = false,
+	let lights = [
+		"green", // 0
+		"red", // 1
+		"yellow" // 2
+	];
+
+	let enterTime,
+		phases = [],
+		sync = false,
 		next = NaN,
 		onplay = false;
 
@@ -42,6 +50,8 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 	video.ontimeupdate = function () {
 		$cache(".time").innerHTML = video.currentTime.toFixed(3);
 		$cache(".scrubber").value = video.currentTime;
+
+		updateLights(video.currentTime);
 
 		if (sync) {
 			if (isNaN(next)) {
@@ -117,6 +127,23 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		document.removeEventListener("mouseup", scrubExit);
 	}
 
+	function updateLights(time) {
+		if (!enterTime) {
+			return;
+		}
+		time = enterTime + time*1000;
+
+		let light = 0;
+		for (let phase of phases) {
+			if (time < phase.start) {
+				break;
+			}
+			light = phase.light;
+		}
+
+		$cache(".phase-id").style.borderColor = lights[light];
+	}
+
 	this.video = video;
 
 	this.playSwitch = function () {
@@ -135,7 +162,25 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		video.currentTime += forward ? frameDuration : -frameDuration;
 	};
 
-	this.definePhases = function (phases) {};
+	this.definePhases = function (phs, enter) {
+		switch (phs.length) {
+			case 0:
+				return;
+			case 1:
+				if (phs[0].light == "0") {
+					return;
+				} break;
+		}
+		enterTime = enter.getTime();
+		phases = phs;
+
+		for (let ph of phases) {
+			ph.start = ph.start.getTime();
+		}
+		updateLights(0);
+
+		$cache(".phase-id").style.display = "inline-block";
+	};
 
 	this.loadSource = function (url) {
 		video.hidden = false;
@@ -144,5 +189,11 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 
 	this.clear = function () {
 		video.hidden = true;
+
+		video.pause()
+		enterTime = undefined;
+		phases = [];
+
+		$cache(".phase-id").style.display = "none";
 	};
 }

@@ -1,9 +1,9 @@
 /**
  * Azimuth IMGF player
  * imgf-player.js
- * 
+ *
  * @requires: fragments/imgf.js
- * 
+ *
  * @author: alkorgun
  */
 function EmbeddedIMGFPlayer(elementSelector, composerInstance) {

@@ -8,7 +8,7 @@ echo -e "rendering index.html...\n"
 
 echo -e "\nincluding submodules..."
 
-git submodule update --init
+git submodule update --init --recursive --remote
 
 mkdir ssldocs/images
 

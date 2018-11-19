@@ -1,7 +1,7 @@
 /**
  * Azimuth IMGX/IMGF player composer
  * composer.js
- * 
+ *
  * @requires: vue.js, gluon.js, handy.js, fragments/{imgx.js,imgf.js}
  *
  * @author: alkorgun
@@ -161,7 +161,7 @@ function setComposer(entire) {
 				if (set) {
 					this.menu.violation = violation;
 				}
-				this.clear();
+				this.clear(true);
 
 				meta = meta || {};
 
@@ -185,6 +185,8 @@ function setComposer(entire) {
 						setTimeout(() => {
 							self.currentPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", self);
 							self.currentPlayer.loadSource(stream.source, frame);
+
+							self.currentPlayer.definePhases(self.menu.violation.lights, stream.enter);
 						}, 0);
 						break;
 					case "imgv":
@@ -222,9 +224,13 @@ function setComposer(entire) {
 						alert("Отображение выбранного материала ( {name} ) не поддерживается.".format({name: stream.name}));
 				}
 			},
-			clear: function () {
+			clear: function (inner) {
 				if (this.currentPlayer) {
 					this.currentPlayer.clear();
+				}
+				if (!inner) {
+					this.menu.violation = null;
+					this.menu.stream = null;
 				}
 				this.meta = [];
 				this.streams = [];
@@ -232,7 +238,7 @@ function setComposer(entire) {
 			scanImgfPhases: function (imgf) {
 				let lights = [
 					"green", // 0
-					"red",  // 1
+					"red", // 1
 					"yellow" // 2
 				];
 
