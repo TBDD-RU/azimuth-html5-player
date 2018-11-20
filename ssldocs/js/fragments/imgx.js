@@ -39,6 +39,8 @@ function IMGX(arrayBuffer) {
 						primary = violation.querySelector("stream[primary='1']");
 					}
 
+					let speed = violation.querySelector("speed");
+
 					let frame = primary.querySelector("frame");
 
 					primary = primary.attributes.name.value;
@@ -50,8 +52,10 @@ function IMGX(arrayBuffer) {
 					));
 					info.controller = dom.querySelector("complexinfo name").textContent;
 					info.place = violation.querySelector("place name").textContent;
-					info.speed = violation.querySelector("speed value").textContent;
-					info.limit = violation.querySelector("speed limit").textContent;
+					if (speed) {
+						info.speed = speed.querySelector("value").textContent;
+						info.limit = speed.querySelector("limit").textContent;
+					}
 					info.lpn = violation.querySelector("LPN").textContent;
 					info.type = violation.querySelector("type").textContent;
 					info.lights = [];
@@ -74,12 +78,17 @@ function IMGX(arrayBuffer) {
 								let _st = dom.querySelector("streams stream[name='{n}']".format({n: file.name}));
 								let display_name = _st.attributes.display_name,
 									fps = _st.attributes.fps;
+								if (display_name && display_name.value.length > 0) {
+									display_name = display_name.value;
+								} else {
+									display_name = file.name;
+								}
 								let desc = {
 									name: file.name,
-									display_name: display_name ? display_name.value : file.name,
+									display_name: display_name,
 									blob: file.blob,
 									enter: parseTime(_st.querySelector("frames frame[n='0'] timecode")),
-									fps: fps ? fps.value : null,
+									fps: (fps && fps.value.length > 0) ? fps.value : null,
 									source: file.getBlobUrl()
 								};
 								if (desc.name == primary) {
