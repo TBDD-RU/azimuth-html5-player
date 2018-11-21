@@ -29,11 +29,17 @@ function createMainWindow() {
 
 	win.loadURL("file://{fld}/ssldocs/index.html".format({fld: __dirname}));
 
-	//win.webContents.openDevTools();
+	enableDevTools(win);
 
 	win.on("closed", () => {
 		win = null;
 	});
+}
+
+function enableDevTools(win) {
+	if (process.argv.indexOf("--devtools") > -1) {
+		win.webContents.openDevTools();
+	}
 }
 
 app.on("ready", createMainWindow);
