@@ -43,6 +43,8 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		$cache(".duration").innerHTML = video.duration.toFixed(3);
 		$cache(".scrubber").max = video.duration;
 		$cache(".scrubber").value = video.currentTime;
+
+		createPhasebar();
 	};
 	video.oncanplay = function () {
 		document.body.style.cursor = "default";
@@ -144,6 +146,31 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		$cache(".phase-id").style.borderColor = lights[light];
 	}
 
+	function createPhasebar() {
+		if (!enterTime) {
+			return;
+		}
+		let endTime = enterTime + video.duration*1000;
+
+		let phasebar = $cache(".phasebar");
+
+		let el,
+			duration,
+			start,
+			end;
+		for (let ph of phases) {
+			start = enterTime > ph.start ? enterTime : ph.start;
+			end = endTime < ph.end ? endTime : ph.end;
+
+			duration = (end - start) / 10 / video.duration;
+
+			el = document.createElement("span");
+			el.className = "phase-" + lights[ph.light > 2 ? 0 : ph.light];
+			el.style.width = duration + "%";
+			phasebar.appendChild(el);
+		}
+	}
+
 	this.video = video;
 
 	this.playSwitch = function () {
@@ -153,7 +180,7 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 	this.shiftFrame = function (forward, multiply) {
 		video.paused || video.pause();
 
-		let frameDuration = video.mozPresentedFrames ? video.duration / video.mozPresentedFrames : 1.0 / this.FPS;
+		let frameDuration = video.mozPresentedFrames ? video.duration / video.mozPresentedFrames : 1.0 / self.FPS;
 
 		if (multiply) {
 			frameDuration *= 10;
@@ -172,28 +199,45 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 				} break;
 		}
 		enterTime = enter.getTime();
-		phases = phs;
 
-		for (let ph of phases) {
+		for (let ph of phs) {
+			ph = Object.assign({}, ph);
+
 			ph.start = ph.start.getTime();
+			ph.end = ph.end.getTime();
+
+			phases.push(ph);
 		}
 		updateLights(0);
 
 		$cache(".phase-id").style.display = "inline-block";
 	};
 
-	this.loadSource = function (url) {
+	this.loadSource = function (url, fps, start) {
 		video.hidden = false;
 		video.src = url;
+
+		self.FPS = fps || self.FPS;
+
+		if (start) {
+			video.currentTime = start / self.FPS;
+		}
 	};
 
 	this.clear = function () {
 		video.hidden = true;
 
-		video.pause()
+		video.pause();
 		enterTime = undefined;
 		phases = [];
 
+		self.FPS = 25.0;
+
+		let phasebar = $cache(".phasebar");
+
+		while (phasebar.firstChild) {
+			phasebar.removeChild(phasebar.firstChild);
+		}
 		$cache(".phase-id").style.display = "none";
 	};
 }

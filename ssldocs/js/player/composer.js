@@ -184,7 +184,7 @@ function setComposer(entire) {
 
 						setTimeout(() => {
 							self.currentPlayer = new EmbeddedIMGXPlayer("#app-imgx-player", self);
-							self.currentPlayer.loadSource(stream.source, frame);
+							self.currentPlayer.loadSource(stream.source, stream.fps, isNaN(frame) ? stream.start : frame);
 
 							self.currentPlayer.definePhases(self.menu.violation.lights, stream.enter);
 						}, 0);

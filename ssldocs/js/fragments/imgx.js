@@ -63,32 +63,48 @@ function IMGX(arrayBuffer) {
 					info.streams = [];
 					info.xml = xml;
 
-					for (let ph of Array.from(violation.querySelectorAll("trafficlight phase"))) {
+					for (let ph of Array.from(violation.querySelectorAll("redlight phase"))) {
 						info.lights.push({
-							light: +(ph.querySelector("light").textContent),
-							start: parseTime(ph.querySelector("start_timecode"))
+							light: +ph.querySelector("light").textContent,
+							start: parseTime(ph.querySelector("start_timecode")),
+							end: parseTime(ph.querySelector("end_timecode"))
 						});
 					}
 
-					info.lights.sort((a, b) => { return a.start - b.start; });
+					if (info.lights.length > 1) {
+						info.lights.sort((a, b) => { return a.start - b.start; });
+					}
 
 					for (let stream of Array.from(streams)) {
 						for (let file of files) {
 							if (file.name == stream.attributes.name.value) {
 								let _st = dom.querySelector("streams stream[name='{n}']".format({n: file.name}));
 								let display_name = _st.attributes.display_name,
-									fps = _st.attributes.fps;
+									fps = _st.attributes.fps,
+									frame = stream.querySelector("frame[primary='1']");
+								if (!frame) {
+									frame = stream.querySelector("frame");
+								} if (frame) {
+									frame = +frame.textContent;
+								}
 								if (display_name && display_name.value.length > 0) {
 									display_name = display_name.value;
 								} else {
 									display_name = file.name;
+								}
+								if (fps) {
+									let groups = fps.value.match(/^(\d+)\/(\d+)$/);
+									if (groups) {
+										fps = groups.slice(1).reduce((a, b) => { return a / b; });
+									}
 								}
 								let desc = {
 									name: file.name,
 									display_name: display_name,
 									blob: file.blob,
 									enter: parseTime(_st.querySelector("frames frame[n='0'] timecode")),
-									fps: (fps && fps.value.length > 0) ? fps.value : null,
+									start: frame || 0,
+									fps: fps || 0,
 									source: file.getBlobUrl()
 								};
 								if (desc.name == primary) {
