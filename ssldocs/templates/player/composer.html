@@ -34,7 +34,7 @@
 						</option>
 					</select>
 					<button class="btn btn-default" v-on:click="showXML()"><img src="/images/feather/file-text.svg" /></button>
-				</div><div>
+				</div><div v-show="streams.length">
 					<select class="form-control" v-model="menu.stream">
 						<option v-for="stream in streams" v-bind:value="stream">
 							{{ stream.display_name }}
