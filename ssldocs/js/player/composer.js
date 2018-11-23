@@ -196,7 +196,7 @@ function setComposer(entire) {
 						initBlobReader((data) => {
 							(new IMGF(data)).onready(function (imgf) {
 								self.currentPlayer = new EmbeddedIMGFPlayer("#app-imgf-player", self);
-								self.currentPlayer.loadSource(imgf.frames, frame);
+								self.currentPlayer.loadSource(imgf.frames, isNaN(frame) ? stream.start : frame);
 
 								self.currentPlayer.definePhases(self.scanImgfPhases(imgf));
 							});
