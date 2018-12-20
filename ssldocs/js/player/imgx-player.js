@@ -222,6 +222,9 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		if (start) {
 			video.currentTime = start / self.FPS;
 		}
+
+		$cache(".scrubber").hidden = false;
+		$cache(".controlbar").hidden = false;
 	};
 
 	this.clear = function () {
@@ -232,6 +235,9 @@ function EmbeddedIMGXPlayer(elementSelector, composerInstance) {
 		phases = [];
 
 		self.FPS = 25.0;
+
+		$cache(".scrubber").hidden = true;
+		$cache(".controlbar").hidden = true;
 
 		let phasebar = $cache(".phasebar");
 
