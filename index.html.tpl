@@ -39,6 +39,12 @@ addEventListener("load", () => {
 	let filename = process.argv.slice(-1)[0];
 
 	openIfIMGX(filename);
+
+	let __electron = require("electron");
+
+	__electron.ipcRenderer.on("open", (event, filename) => {
+		expandPath(filename);
+	});
 });
 
 for (let event of ["dragover", "dragleave", "dragend"]) {

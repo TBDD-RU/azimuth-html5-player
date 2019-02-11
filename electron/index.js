@@ -27,7 +27,11 @@ function createMainWindow() {
 
 	state.manage(win);
 
-	win.loadURL("file://{fld}/ssldocs/index.html".format({fld: __dirname}));
+	win.setMenu(getMenu());
+
+	win.setAutoHideMenuBar(true);
+
+	win.loadURL(`file://${__dirname}/ssldocs/index.html`);
 
 	enableDevTools(win);
 
@@ -80,6 +84,46 @@ function getArgs() {
 		args.push(argv[argv.length - 1]);
 	}
 	return args
+}
+
+function getMenu() {
+	return electron.Menu.buildFromTemplate([
+		{
+			label: "Файл",
+			submenu: [
+				{
+					label: "Открыть",
+					click(_, win) {
+						let options = {
+							properties: [ "openFile" ],
+							filters: [{
+								name: ".imgx, .imgf, .imgv",
+								extensions: ["imgx", "imgf", "imgv"]
+							}]
+						}, callback = (files) => {
+							if (files && files.length > 0) {
+								win.webContents.send("open", files.pop());
+							};
+						};
+
+						electron.dialog.showOpenDialog(win, options, callback);
+					}
+				}, {
+					label: "Выйти",
+					click() {
+						app.quit();
+					}
+				}
+			]
+		}, {
+			label: "О программе",
+			click() {
+				let win = new BrowserWindow({width: 480, height: 384});
+
+				win.loadURL(`file://${__dirname}/about.html`);
+			}
+		}
+	]);
 }
 
 function b64encode(str) {
